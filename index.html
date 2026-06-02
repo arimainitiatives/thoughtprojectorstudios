@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Thought Projector Studios</title>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --charcoal:      #2B2D2F;
+      --gold:          #D4B97C;
+      --gold-light:    #E8D4A8;
+      --gold-dark:     #B89A58;
+      --lavender:      #E5E0F2;
+      --vanilla:       #F9EFDB;
+      --rose:          #B94F72;
+      --rose-light:    #D4789A;
+      --rose-pale:     #F2D0DC;
+      --eggplant:      #2E1040;
+      --eggplant-mid:  #4A1A65;
+      --white:         #FFFCF8;
+      --ink:           #1C1E20;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 300;
+      background: var(--vanilla);
+      color: var(--charcoal);
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    /* CURSOR */
+    #cur {
+      width: 10px; height: 10px;
+      background: var(--gold);
+      border-radius: 50%;
+      position: fixed; pointer-events: none; z-index: 9999;
+      transform: translate(-50%,-50%);
+      transition: transform .15s, background .2s;
+    }
+    #cur-ring {
+      width: 34px; height: 34px;
+      border: 1.5px solid var(--charcoal);
+      border-radius: 50%;
+      position: fixed; pointer-events: none; z-index: 9998;
+      transform: translate(-50%,-50%);
+      transition: left .09s ease, top .09s ease, width .2s, height .2s;
+    }
+    body:has(a:hover) #cur, body:has(button:hover) #cur { transform: translate(-50%,-50%) scale(2.8); background: var(--rose); }
+    body:has(a:hover) #cur-ring, body:has(button:hover) #cur-ring { width: 54px; height: 54px; border-color: var(--rose); }
+
+    /* NAV */
+    nav {
+      position: fixed; top: 0; width: 100%; z-index: 200;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 1.1rem 4rem;
+      background: rgba(249,239,219,.96);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(212,185,124,.25);
+    }
+    .nav-brand { text-decoration: none; display: flex; flex-direction: column; line-height: 1.2; }
+    .nav-brand-sub {
+      font-family: 'Montserrat', sans-serif; font-weight: 300;
+      font-size: .6rem; letter-spacing: .32em; text-transform: uppercase;
+      color: var(--eggplant-mid);
+    }
+    .nav-brand-main {
+      font-family: 'Anton', sans-serif; font-size: 1.45rem; letter-spacing: -.02em;
+      color: var(--charcoal);
+    }
+    .nav-brand-main span { color: var(--rose); }
+    .nav-links { display: flex; gap: 2.6rem; list-style: none; }
+    .nav-links a {
+      font-family: 'Montserrat', sans-serif; font-weight: 500;
+      font-size: .62rem; letter-spacing: .2em; text-transform: uppercase;
+      text-decoration: none; color: var(--charcoal); position: relative; transition: color .2s;
+    }
+    .nav-links a::after {
+      content: ''; position: absolute; bottom: -4px; left: 0;
+      width: 0; height: 1.5px; background: var(--gold); transition: width .3s ease;
+    }
+    .nav-links a:hover { color: var(--rose); }
+    .nav-links a:hover::after { width: 100%; }
+    .nav-hamburger { display: none; }
+    .nav-cta {
+      font-family: 'Montserrat', sans-serif; font-weight: 600;
+      font-size: .62rem; letter-spacing: .18em; text-transform: uppercase;
+      text-decoration: none; padding: .65rem 1.5rem;
+      background: var(--eggplant); color: var(--vanilla); transition: background .2s;
+    }
+    .nav-cta:hover { background: var(--rose); }
+
+    /* HERO */
+    .hero {
+      min-height: 100vh;
+      position: relative; overflow: hidden;
+      display: grid; grid-template-columns: 1.2fr 1fr;
+      align-items: center; padding-top: 5rem;
+      background: linear-gradient(135deg, var(--lavender) 0%, var(--lavender) 35%, var(--vanilla) 75%, var(--gold-light) 100%);
+    }
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background-image: radial-gradient(circle, rgba(212,185,124,.22) 1px, transparent 1px);
+      background-size: 28px 28px; z-index: 1;
+    }
+    .hero-panel {
+      position: absolute; top: 0; right: 0;
+      width: 38%; height: 100%;
+      background: transparent;
+      z-index: 2;
+    }
+    .hero-panel-inner {
+      position: absolute; top: 0; right: 0;
+      width: 38%; height: 100%;
+      z-index: 3;
+      display: flex; flex-direction: column;
+      align-items: flex-start; justify-content: center;
+      gap: 2.5rem; padding: 4rem 3rem 4rem 3rem;
+    }
+    .hero-panel-quote {
+      font-family: 'Montserrat', sans-serif; font-weight: 300;
+      font-size: 1.1rem; font-style: italic;
+      color: var(--eggplant-mid); line-height: 1.85;
+      border-left: 3px solid var(--gold); padding-left: 1.4rem;
+    }
+    .hero-panel-stat {
+      display: flex; flex-direction: column; gap: 1.5rem; width: 100%;
+    }
+    .hero-stat-item {
+      padding: 1.2rem 1.5rem;
+      background: rgba(255,255,255,.5);
+      border-left: 3px solid var(--rose);
+      backdrop-filter: blur(8px);
+    }
+    .hero-stat-label {
+      font-family: 'Montserrat', sans-serif; font-weight: 500;
+      font-size: .58rem; letter-spacing: .25em; text-transform: uppercase;
+      color: var(--rose); display: block; margin-bottom: .3rem;
+    }
+    .hero-stat-text {
+      font-family: 'Montserrat', sans-serif; font-weight: 300;
+      font-size: .88rem; color: var(--eggplant-mid); line-height: 1.5;
+    }
+    .hero-content { position: relative; z-index: 4; padding: 5rem 3rem 5rem 5rem; }
+    .hero-eyebrow {
+      font-family: 'Montserrat', sans-serif; font-weight: 500;
+      font-size: .65rem; letter-spacing: .32em; text-transform: uppercase;
+      color: var(--eggplant-mid); margin-bottom: 1.8rem;
+      display: flex; align-items: center; gap: .8rem;
+      opacity: 0; animation: fadeUp .7s ease .2s forwards;
+    }
+    .hero-eyebrow::before { content: ''; display: block; width: 32px; height: 1.5px; background: var(--gold); }
+    .hero-title {
+      font-family: 'Anton', sans-serif;
+      font-size: clamp(3.4rem, 6vw, 6.2rem);
+      letter-spacing: -.02em; line-height: 1.0;
+      color: var(--charcoal); margin-bottom: 2.2rem;
+      opacity: 0; animation: fadeUp .9s ease .4s forwards;
+    }
+    .hero-title .line-italic {
+      font-family: 'Montserrat', sans-serif; font-weight: 300;
+      font-style: italic; font-size: clamp(2rem, 3.5vw, 3.8rem);
+      color: var(--rose); display: block; letter-spacing: .02em; margin: .4rem 0;
+    }
+    .hero-title .line-outline {
+      -webkit-text-stroke: 2px var(--gold-dark); color: transparent; display: block;
+    }
+    .hero-body {
+      font-size: 1rem; line-height: 1.9; color: rgba(43,45,47,.72);
+      max-width: 500px; margin-bottom: 1.2rem;
+      opacity: 0; animation: fadeUp .9s ease .6s forwards;
+    }
+    .hero-body:last-of-type { margin-bottom: 2.8rem; }
+    .hero-actions {
+      display: flex; gap: 1rem; flex-wrap: wrap;
+      opacity: 0; animation: fadeUp .9s ease .8s forwards;
+    }
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: .7rem;
+      padding: 1rem 2.2rem; background: var(--eggplant); color: var(--vanilla);
+      font-family: 'Montserrat', sans-serif; font-weight: 600;
+      font-size: .65rem; letter-spacing: .2em; text-transform: uppercase;
+      text-decoration: none; border: 2px solid var(--eggplant); transition: all .25s;
+    }
+    .btn-primary::after { content: '→'; transition: transform .2s; }
+    .btn-primary:hover { background: var(--rose); border-color: var(--rose); }
+    .btn-primary:hover::after { transform: translateX(4px); }
+    .btn-secondary {
+      display: inline-flex; align-items: center; gap: .7rem;
+      padding: 1rem 2.2rem; background: transparent; color: var(--charcoal);
+      font-family: 'Montserrat', sans-serif; font-weight: 600;
+      font-size: .65rem; letter-spacing: .2em; text-transform: uppercase;
+      text-decoration: none; border: 2px solid var(--gold); transition: all .25s;
+    }
+    .btn-secondary::after { content: '✦'; font-size: .55rem; }
+    .btn-secondary:hover { background: var(--gold); color: var(--charcoal); }
+
+    /* MARQUEE */
+    .marquee-wrap {
+      background: linear-gradient(45deg, var(--eggplant), var(--eggplant-mid), var(--rose));
+      overflow: hidden; padding: .9rem 0; white-space: nowrap;
+    }
+    .marquee-track { display: inline-flex; animation: marqueeScroll 24s linear infinite; }
+    .marquee-item {
+      font-family: 'Montserrat', sans-serif; font-weight: 500;
+      font-size: .68rem; letter-spacing: .25em; text-transform: uppercase;
+      color: var(--vanilla); padding: 0 2rem;
+    }
+    .marquee-star { color: var(--gold); margin: 0 1rem; }
+
+    /* SHARED */
+    .section-tag {
+      font-family: 'Montserrat', sans-serif; font-weight: 500;
+      font-size: .6rem; letter-spacing: .32em; text-transform: uppercase;
+      color: var(--rose); display: flex; align-items: center; gap: .7rem; margin-bottom: 1.1rem;
+    }
+    .section-tag::before { content: '✦'; font-size: .65rem; color: var(--gold); }
+    .section-title {
+      font-family: 'Anton', sans-serif;
+      font-size: clamp(2.2rem, 4vw, 3.8rem);
+      letter-spacing: -.01em; line-height: 1.05;
+      color: var(--charcoal); margin-bottom: 1.8rem;
+    }
+    .section-title em {
+      font-family: 'Montserrat', sans-serif; font-weight: 300;
+      font-style: italic; color: var(--rose); letter-spacing: .02em;
+    }
+    .section-title.light { color: var(--vanilla); }
+    .section-title.light em { color: var(--gold-light); }
+
+    /* ABOUT */
+    .about {
+      padding: 10rem 6rem;
+      background: radial-gradient(ellipse at center, var(--vanilla) 30%, var(--lavender) 100%);
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 8rem; align-items: center; position: relative; overflow: hidden;
+    }
+    .about-watermark {
+      position: absolute; font-family: 'Anton', sans-serif; font-size: 16vw;
+      color: transparent; -webkit-text-stroke: 1px rgba(43,45,47,.05);
+      top: 50%; left: 50%; transform: translate(-50%,-50%);
+      white-space: nowrap; pointer-events: none; user-select: none; z-index: 0;
+    }
+    .about-left { position: relative; z-index: 1; }
+    .about-body { font-size: 1.02rem; line-height: 1.95; color: rgba(43,45,47,.72); margin-bottom: 1.5rem; }
+    .about-right { position: relative; z-index: 1; }
+    .card-stack { display: flex; flex-direction: column; gap: 1.5rem; }
+    .scard { padding: 2.4rem; position: relative; overflow: hidden; transition: transform .3s ease; }
+    .scard:hover { transform: translateY(-5px); }
+    .scard-1 {
+      background: var(--eggplant);
+      border-top: 4px solid var(--gold);
+      border-left: 1px solid rgba(212,185,124,.2);
+    }
+    .scard-2 {
+      background: linear-gradient(135deg, var(--rose), var(--eggplant-mid));
+      border-top: 4px solid var(--rose-pale);
+    }
+    .scard-label {
+      font-family: 'Montserrat', sans-serif; font-weight: 500;
+      font-size: .55rem; letter-spacing: .28em; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 1rem; display: block;
+    }
+    .scard-2 .scard-label { color: var(--rose-pale); }
+    .scard-quote {
+      font-family: 'Montserrat', sans-serif; font-weight: 300;
+      font-size: 1.1rem; font-style: italic; line-height: 1.6; color: var(--vanilla);
+    }
+
+    /* WHAT WE DO */
+    .what {
+      padding: 10rem 6rem;
+      background: linear-gradient(135deg, var(--rose) 0%, var(--eggplant-mid) 60%, var(--eggplant) 100%);
+      position: relative; overflow: hidden;
+    }
+    .what::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(45deg, rgba(46,16,64,.4) 0%, transparent 60%); pointer-events: none;
+    }
+    .what::after {
+      content: ''; position: absolute; bottom: -100px; right: -100px;
+      width: 500px; height: 500px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(212,185,124,.1) 0%, transparent 70%); pointer-events: none;
+    }
+    .what-inner {
+      max-width: 1200px; margin: 0 auto;
+      display: grid; grid-template-columns: 1fr 1.6fr;
+      gap: 8rem; align-items: start; position: relative; z-index: 1;
+    }
+    .what-tag { color: var(--gold); }
+    .what-body { font-size: 1rem; line-height: 1.9; color: var(--vanilla); margin-bottom: 2rem; }
+    .crossroads { display: grid; grid-template-columns: 1fr 1fr; gap: 3px; background: rgba(212,185,124,.15); }
+    .cross-cell {
+      background: rgba(249,239,219,.04); padding: 2rem 1.8rem;
+      position: relative; overflow: hidden; transition: background .3s;
+    }
+    .cross-cell:hover { background: rgba(255,255,255,.1); }
+    .cross-cell::after {
+      content: attr(data-num); font-family: 'Anton', sans-serif; font-size: 3rem;
+      color: rgba(212,185,124,.08); position: absolute; top: .5rem; right: 1rem; line-height: 1; pointer-events: none;
+    }
+    .cross-star { font-size: 1rem; color: var(--gold); display: block; margin-bottom: .7rem; }
+    .cross-title {
+      font-family: 'Montserrat', sans-serif; font-weight: 600;
+      font-size: .88rem; letter-spacing: .06em; color: var(--vanilla); margin-bottom: .5rem;
+    }
+    .cross-text { font-size: .82rem; line-height: 1.7; color: rgba(249,239,219,.85); }
+
+    /* PROMISE */
+    .promise {
+      padding: 10rem 6rem;
+      background: linear-gradient(45deg, var(--lavender) 0%, var(--vanilla) 100%);
+      position: relative; overflow: hidden;
+    }
+    .promise::before {
+      content: '✦';
+      font-family: 'Anton', sans-serif; font-size: 30vw;
+      color: transparent; -webkit-text-stroke: 1px rgba(43,45,47,.04);
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+      pointer-events: none; user-select: none; z-index: 0;
+    }
+    .promise-inner {
+      max-width: 1100px; margin: 0 auto; position: relative; z-index: 1;
+      display: grid; grid-template-columns: 1.3fr 1fr; gap: 7rem; align-items: center;
+    }
+    .promise-pullquote {
+      font-family: 'Montserrat', sans-serif; font-weight: 300;
+      font-size: 1.4rem; font-style: italic; line-height: 1.8;
+      color: var(--eggplant-mid); margin-bottom: 2.5rem;
+      border-left: 3px solid var(--gold); padding-left: 1.8rem;
+    }
+    .promise-pullquote strong { font-weight: 600; font-style: normal; color: var(--rose); }
+    .promise-values {
+      display: flex; flex-direction: column; gap: 1rem; margin-top: 2rem;
+    }
+    .promise-value {
+      display: flex; align-items: center; gap: 1rem;
+      padding: 1rem 1.4rem;
+      background: rgba(255,255,255,.6);
+      border-left: 3px solid var(--gold);
+      transition: transform .2s, background .2s;
+    }
+    .promise-value:hover { transform: translateX(6px); background: rgba(255,255,255,.9); }
+    .promise-value-icon { font-size: 1rem; color: var(--gold); flex-shrink: 0; }
+    .promise-value-text {
+      font-family: 'Montserrat', sans-serif; font-weight: 500;
+      font-size: .82rem; letter-spacing: .08em; text-transform: uppercase;
+      color: var(--eggplant-mid);
+    }
+    .promise-visual { display: flex; align-items: center; justify-content: center; }
+    .dial-wrap { position: relative; width: 270px; height: 270px; }
+    .dial-ring {
+      width: 270px; height: 270px; border-radius: 50%;
+      border: 1.5px solid var(--gold); position: absolute; top: 0; left: 0;
+      animation: rotateBadge 28s linear infinite;
+    }
+    .dial-ring-inner {
+      width: 200px; height: 200px; border-radius: 50%;
+      border: 1.5px dashed rgba(43,45,47,.15); position: absolute;
+      top: 50%; left: 50%; transform: translate(-50%,-50%);
+    }
+    .dial-center {
+      width: 160px; height: 160px; border-radius: 50%;
+      background: var(--eggplant); position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%,-50%);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      text-align: center; padding: 1.2rem;
+    }
+    .dial-center-text {
+      font-family: 'Montserrat', sans-serif; font-weight: 300;
+      font-size: .78rem; font-style: italic; color: var(--gold-light); line-height: 1.6;
+      transition: opacity 0.6s ease;
+    }
+    .dial-center-text strong {
+      font-family: 'Anton', sans-serif; font-style: normal;
+      font-size: .9rem; letter-spacing: .05em; color: var(--gold); display: block; margin-bottom: .2rem;
+    }
+    .dial-dot { position: absolute; width: 9px; height: 9px; background: var(--rose); border-radius: 50%; }
+    .dial-dot:nth-child(1) { top: -5px; left: 50%; transform: translateX(-50%); }
+    .dial-dot:nth-child(2) { bottom: -5px; left: 50%; transform: translateX(-50%); }
+    .dial-dot:nth-child(3) { left: -5px; top: 50%; transform: translateY(-50%); }
+    .dial-dot:nth-child(4) { right: -5px; top: 50%; transform: translateY(-50%); }
+
+    /* CTA / CONTACT */
+    .cta {
+      padding: 10rem 6rem; background: var(--eggplant);
+      position: relative; overflow: hidden;
+    }
+    .cta::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(45deg, rgba(185,79,114,.18) 0%, transparent 60%); pointer-events: none;
+    }
+    .cta::after {
+      content: ''; position: absolute; inset: 0;
+      background-image: radial-gradient(circle, rgba(212,185,124,.1) 1.5px, transparent 1.5px);
+      background-size: 28px 28px; z-index: 0; pointer-events: none;
+    }
+    .cta-inner {
+      position: relative; z-index: 1; max-width: 1100px; margin: 0 auto;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 6rem; align-items: start;
+    }
+    .cta-tag { color: var(--gold); }
+    .cta-headline {
+      font-family: 'Anton', sans-serif;
+      font-size: clamp(2.6rem, 5vw, 4.8rem);
+      letter-spacing: -.01em; line-height: 1.02; color: var(--vanilla); margin-bottom: .8rem;
+    }
+    .cta-headline em {
+      font-family: 'Montserrat', sans-serif; font-weight: 300; font-style: italic;
+      color: var(--gold-light); font-size: clamp(1.6rem, 3vw, 3rem); display: block; letter-spacing: .02em;
+    }
+    .cta-sub {
+      font-size: 1.05rem; font-style: italic; font-weight: 300;
+      line-height: 1.8; color: rgba(249,239,219,.65); margin-bottom: 3rem;
+    }
+    .discovery-block {
+      background: linear-gradient(45deg, var(--rose), var(--rose-light));
+      padding: 2.6rem; position: relative; overflow: hidden;
+    }
+    .discovery-block::before {
+      content: '✦'; position: absolute; top: -1.5rem; right: 1.5rem;
+      font-size: 9rem; color: rgba(255,255,255,.06); line-height: 1;
+    }
+    .disc-label {
+      font-family: 'Montserrat', sans-serif; font-weight: 500;
+      font-size: .56rem; letter-spacing: .3em; text-transform: uppercase;
+      color: var(--rose-pale); margin-bottom: .7rem; display: block;
+    }
+    .disc-title {
+      font-family: 'Montserrat', sans-serif; font-weight: 300;
+      font-size: 1.35rem; font-style: italic;
+      color: var(--white); margin-bottom: 1.8rem; line-height: 1.45;
+    }
+    .btn-disc {
+      display: inline-flex; align-items: center; gap: .7rem;
+      padding: .95rem 2rem; background: var(--gold); color: var(--charcoal);
+      font-family: 'Montserrat', sans-serif; font-weight: 600;
+      font-size: .62rem; letter-spacing: .18em; text-transform: uppercase;
+      text-decoration: none; border: 2px solid var(--gold); transition: all .25s;
+    }
+    .btn-disc::after { content: '→'; transition: transform .2s; }
+    .btn-disc:hover { background: transparent; color: var(--gold); }
+    .btn-disc:hover::after { transform: translateX(4px); }
+    .form-divider {
+      display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem;
+    }
+    .form-divider::before, .form-divider::after {
+      content: ''; flex: 1; height: 1px; background: rgba(212,185,124,.25);
+    }
+    .form-divider span {
+      font-family: 'Montserrat', sans-serif; font-weight: 500;
+      font-size: .56rem; letter-spacing: .24em; text-transform: uppercase;
+      color: rgba(212,185,124,.5);
+    }
+    .contact-form { display: flex; flex-direction: column; gap: 1.1rem; }
+    .flabel {
+      font-family: 'Montserrat', sans-serif; font-weight: 500;
+      font-size: .56rem; letter-spacing: .22em; text-transform: uppercase;
+      color: var(--gold-light); display: block; margin-bottom: .35rem;
+    }
+    .finput, .fselect, .ftextarea {
+      width: 100%; padding: .85rem 1rem;
+      background: rgba(249,239,219,.05); border: 1px solid rgba(212,185,124,.2);
+      color: var(--vanilla); font-family: 'Montserrat', sans-serif; font-weight: 300;
+      font-size: .9rem; outline: none; transition: border-color .2s, background .2s;
+    }
+    .finput::placeholder, .ftextarea::placeholder { color: rgba(249,239,219,.28); }
+    .finput:focus, .fselect:focus, .ftextarea:focus {
+      border-color: var(--gold); background: rgba(212,185,124,.08);
+    }
+    .fselect { appearance: none; cursor: none; }
+    .fselect option { background: var(--eggplant); }
+    .ftextarea { resize: vertical; min-height: 110px; }
+    .fsubmit {
+      margin-top: .4rem; padding: 1rem 2rem;
+      background: var(--eggplant); color: var(--vanilla);
+      border: 2px solid rgba(212,185,124,.3);
+      font-family: 'Montserrat', sans-serif; font-weight: 600;
+      font-size: .62rem; letter-spacing: .2em; text-transform: uppercase;
+      cursor: none; transition: all .25s;
+      display: flex; align-items: center; justify-content: center; gap: .6rem;
+    }
+    .fsubmit:hover { background: var(--gold); color: var(--charcoal); border-color: var(--gold); }
+
+    /* FOOTER */
+    footer {
+      background: linear-gradient(135deg, var(--eggplant) 0%, var(--eggplant-mid) 100%);
+      padding: 4rem 6rem;
+      display: flex; justify-content: space-between; align-items: center;
+      border-top: 3px solid var(--gold);
+    }
+    .foot-brand {
+      font-family: 'Anton', sans-serif;
+      font-size: 2rem; letter-spacing: -.01em;
+      color: var(--vanilla); line-height: 1;
+    }
+    .foot-brand span { color: var(--rose); }
+    .foot-brand-sub {
+      font-family: 'Montserrat', sans-serif; font-weight: 300;
+      font-size: .6rem; letter-spacing: .3em; text-transform: uppercase;
+      color: var(--gold); margin-top: .5rem; display: block;
+    }
+    .foot-tag {
+      font-family: 'Montserrat', sans-serif; font-weight: 300;
+      font-size: .58rem; letter-spacing: .22em; text-transform: uppercase;
+      color: rgba(212,185,124,.45); margin-top: .35rem;
+    }
+    .foot-copy {
+      font-family: 'Montserrat', sans-serif; font-weight: 300;
+      font-size: .72rem; letter-spacing: .08em; color: rgba(249,239,219,.3);
+      text-align: right;
+    }
+
+    /* ANIMATIONS */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(26px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes rotateBadge {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
+    @keyframes marqueeScroll {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+    .reveal { opacity: 0; transform: translateY(34px); transition: opacity .75s ease, transform .75s ease; }
+    .reveal.on { opacity: 1; transform: translateY(0); }
+    .rd1 { transition-delay: .1s; }
+    .rd2 { transition-delay: .22s; }
+    .rd3 { transition-delay: .34s; }
+    .rd4 { transition-delay: .46s; }
+
+    /* ── MOBILE RESPONSIVE ── */
+    @media (max-width: 768px) {
+
+      /* Hide custom cursor on touch devices */
+      #cur, #cur-ring { display: none; }
+      body { cursor: auto; }
+
+      /* NAV */
+      nav {
+        padding: .9rem 1.5rem;
+        flex-wrap: wrap; gap: .8rem;
+      }
+      .nav-brand-main { font-size: 1.1rem; }
+      .nav-links {
+        display: none;
+        flex-direction: column;
+        width: 100%;
+        gap: 0;
+        background: rgba(249,239,219,.98);
+        padding: 1rem 0;
+        border-top: 1px solid rgba(212,185,124,.2);
+      }
+      .nav-links.open { display: flex; }
+      .nav-links li { width: 100%; }
+      .nav-links a {
+        display: block; padding: .9rem 1.5rem;
+        font-size: .75rem; border-bottom: 1px solid rgba(212,185,124,.1);
+      }
+      .nav-hamburger {
+        display: flex; flex-direction: column;
+        gap: 5px; background: none; border: none;
+        cursor: pointer; padding: .4rem;
+      }
+      .nav-hamburger span {
+        display: block; width: 24px; height: 2px;
+        background: var(--charcoal); transition: all .3s ease;
+      }
+      .nav-hamburger.open span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
+      .nav-hamburger.open span:nth-child(2) { opacity: 0; }
+      .nav-hamburger.open span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
+
+      /* HERO */
+      .hero {
+        grid-template-columns: 1fr;
+        min-height: auto;
+        padding: 7rem 1.5rem 4rem;
+      }
+      .hero-panel { display: none; }
+      .hero-panel-inner { display: none; }
+      .hero-content { padding: 0; }
+      .hero-title { font-size: clamp(2.8rem, 10vw, 4rem); }
+      .hero-title .line-italic { font-size: clamp(1.6rem, 7vw, 2.5rem); }
+      .hero-body { font-size: .95rem; max-width: 100%; }
+      .hero-actions { flex-direction: column; }
+      .btn-primary { text-align: center; justify-content: center; }
+
+      /* MARQUEE */
+      .marquee-item { font-size: .6rem; padding: 0 1.2rem; }
+
+      /* ABOUT */
+      .about {
+        grid-template-columns: 1fr;
+        padding: 5rem 1.5rem;
+        gap: 3rem;
+      }
+      .about-watermark { font-size: 28vw; }
+      .card-stack { height: auto; display: flex; flex-direction: column; gap: 1.5rem; }
+
+      /* WHAT WE DO */
+      .what { padding: 5rem 1.5rem; }
+      .what-inner {
+        grid-template-columns: 1fr;
+        gap: 3rem;
+      }
+      .crossroads { grid-template-columns: 1fr; }
+      .cross-cell[style] { grid-column: span 1 !important; }
+
+      /* PROMISE */
+      .promise { padding: 5rem 1.5rem; }
+      .promise-inner {
+        grid-template-columns: 1fr;
+        gap: 3rem;
+      }
+      .promise-pullquote { font-size: 1.1rem; }
+      .promise-visual { margin-top: 1rem; }
+      .dial-wrap { width: 220px; height: 220px; }
+      .dial-ring { width: 220px; height: 220px; }
+      .dial-ring-inner { width: 160px; height: 160px; }
+      .dial-center { width: 130px; height: 130px; }
+
+      /* CTA / CONTACT */
+      .cta { padding: 5rem 1.5rem; }
+      .cta-inner {
+        grid-template-columns: 1fr;
+        gap: 3rem;
+      }
+      .cta-headline { font-size: clamp(2rem, 8vw, 3rem); }
+
+      /* FOOTER */
+      footer {
+        padding: 3rem 1.5rem;
+        flex-direction: column;
+        text-align: center;
+        gap: 1.5rem;
+      }
+      .foot-brand { font-size: 1.6rem; }
+      .foot-copy { text-align: center; }
+
+      /* SECTION TITLES */
+      .section-title { font-size: clamp(1.8rem, 7vw, 2.8rem); }
+    }
+
+    /* TABLET */
+    @media (min-width: 769px) and (max-width: 1024px) {
+      nav { padding: 1rem 2rem; }
+      .nav-links { gap: 1.5rem; }
+
+      .hero { padding: 6rem 2rem 3rem; }
+      .hero-content { padding: 3rem 2rem 3rem 3rem; }
+      .hero-panel-inner { padding: 3rem 2rem 3rem 4rem; }
+
+      .about { padding: 7rem 3rem; gap: 4rem; }
+      .what { padding: 7rem 3rem; }
+      .what-inner { gap: 4rem; }
+      .promise { padding: 7rem 3rem; }
+      .promise-inner { gap: 4rem; }
+      .cta { padding: 7rem 3rem; }
+      .cta-inner { gap: 4rem; }
+      footer { padding: 3rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="cur"></div>
+  <div id="cur-ring"></div>
+
+  <nav>
+    <a href="#" class="nav-brand">
+      <span class="nav-brand-main">Thought <span>Projector</span> Studios</span>
+    </a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#about" onclick="closeMenu()">About</a></li>
+      <li><a href="#what" onclick="closeMenu()">Our Work</a></li>
+      <li><a href="#promise" onclick="closeMenu()">Our Promise</a></li>
+      <li><a href="#contact" onclick="closeMenu()">Contact</a></li>
+    </ul>
+    <button class="nav-hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-content">
+      <p class="hero-eyebrow">Thought Projector Studios</p>
+      <h1 class="hero-title">
+        Transforming
+        <span class="line-italic">Thoughts</span>
+        <span class="line-outline">into Greatness.</span>
+      </h1>
+      <p class="hero-body">We help values-led businesses, creative, cultural, and mission-driven organizations turn big ideas into thoughtful strategy, stronger engagement, and meaningful impact.</p>
+      <p class="hero-body">Whether you're shaping a story, growing a community, or advancing a mission, we help you move forward with purpose.</p>
+      <div class="hero-actions">
+        <a href="https://calendly.com/thoughtprojectorstudios" target="_blank" class="btn-primary">Book a Discovery Call</a>
+      </div>
+    </div>
+    <div class="hero-panel"></div>
+    <div class="hero-panel-inner">
+      <p class="hero-panel-quote">Thought Projector Studios — where vision meets execution that leaves no one behind.</p>
+      <div class="hero-panel-stat">
+        <div class="hero-stat-item">
+          <span class="hero-stat-label">✦ Who We Serve</span>
+          <span class="hero-stat-text">Creatives, educators, advocates & nonprofits</span>
+        </div>
+        <div class="hero-stat-item">
+          <span class="hero-stat-label">✦ What We Deliver</span>
+          <span class="hero-stat-text">Clarity, strategy & meaningful impact</span>
+        </div>
+        <div class="hero-stat-item">
+          <span class="hero-stat-label">✦ How We Work</span>
+          <span class="hero-stat-text">With collaboration, respect & care</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="marquee-wrap" aria-hidden="true">
+    <div class="marquee-track">
+      <span class="marquee-item">Strategic Planning <span class="marquee-star">✦</span></span>
+      <span class="marquee-item">Organizational Development <span class="marquee-star">✦</span></span>
+      <span class="marquee-item">Cross-Sector Collaboration <span class="marquee-star">✦</span></span>
+      <span class="marquee-item">Vision to Reality <span class="marquee-star">✦</span></span>
+      <span class="marquee-item">Media Meets Mission <span class="marquee-star">✦</span></span>
+      <span class="marquee-item">Art Meets Action <span class="marquee-star">✦</span></span>
+      <span class="marquee-item">Strategic Planning <span class="marquee-star">✦</span></span>
+      <span class="marquee-item">Organizational Development <span class="marquee-star">✦</span></span>
+      <span class="marquee-item">Cross-Sector Collaboration <span class="marquee-star">✦</span></span>
+      <span class="marquee-item">Vision to Reality <span class="marquee-star">✦</span></span>
+      <span class="marquee-item">Media Meets Mission <span class="marquee-star">✦</span></span>
+      <span class="marquee-item">Art Meets Action <span class="marquee-star">✦</span></span>
+    </div>
+  </div>
+
+  <section class="about" id="about">
+    <div class="about-watermark" aria-hidden="true">BOLD</div>
+    <div class="about-left reveal">
+      <span class="section-tag">Who We Are</span>
+      <h2 class="section-title">Work that<br><em>Matters.</em></h2>
+      <p class="about-body">Thought Projector Studios is a strategic planning consultancy for people and organizations doing work that matters. We partner with values-led businesses, creatives, cultural organizations, educators, advocates, and nonprofits to bring structure to big ideas and help turn them into action.</p>
+      <p class="about-body">Our work is grounded in respect and a belief that strategy should support both the mission and the people behind it.</p>
+    </div>
+    <div class="about-right reveal rd2">
+      <div class="card-stack">
+        <div class="scard scard-1">
+          <span class="scard-label">✦ Our Foundation</span>
+          <p class="scard-quote">"Good strategy should serve both the mission and the people behind it."</p>
+        </div>
+        <div class="scard scard-2">
+          <span class="scard-label">✦ Our Commitment</span>
+          <p class="scard-quote">"Rooted in collaboration, respect, and a deep belief in meaningful work."</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="what" id="what">
+    <div class="what-inner">
+      <div class="what-left reveal">
+        <span class="section-tag what-tag">What We Do</span>
+        <h2 class="section-title light">Strategy<br><em>in Action.</em></h2>
+        <p class="what-body">We offer strategic planning, organizational development, audience and community engagement, community outreach, social impact strategy, and cross-sector collaboration.</p>
+        <p class="what-body">We help clients clarify direction, align around shared goals, and build plans they can actually use.</p>
+      </div>
+      <div class="crossroads reveal rd2">
+        <div class="cross-cell" data-num="01">
+          <span class="cross-star">✦</span>
+          <h3 class="cross-title">Creative & Cultural Strategy</h3>
+          <p class="cross-text">Supports organizations shaping culture, storytelling, and public engagement.</p>
+        </div>
+        <div class="cross-cell" data-num="02">
+          <span class="cross-star">✦</span>
+          <h3 class="cross-title">Audience & Community Engagement</h3>
+          <p class="cross-text">Builds deeper connection with the people you serve.</p>
+        </div>
+        <div class="cross-cell" data-num="03">
+          <span class="cross-star">✦</span>
+          <h3 class="cross-title">Community Outreach</h3>
+          <p class="cross-text">Expands visibility, participation, and trust across communities.</p>
+        </div>
+        <div class="cross-cell" data-num="04">
+          <span class="cross-star">✦</span>
+          <h3 class="cross-title">Social Impact</h3>
+          <p class="cross-text">Helps mission-driven work create meaningful, measurable change.</p>
+        </div>
+        <div class="cross-cell" data-num="05">
+          <span class="cross-star">✦</span>
+          <h3 class="cross-title">Strategic Planning</h3>
+          <p class="cross-text">Provides clear, actionable roadmaps for growth and implementation.</p>
+        </div>
+        <div class="cross-cell" data-num="06">
+          <span class="cross-star">✦</span>
+          <h3 class="cross-title">Organizational Development</h3>
+          <p class="cross-text">Strengthens systems, teams, and roles.</p>
+        </div>
+        <div class="cross-cell" data-num="07" style="grid-column: span 2;">
+          <span class="cross-star">✦</span>
+          <h3 class="cross-title">Cross-Sector Collaboration</h3>
+          <p class="cross-text">Aligns people, partners, and purpose.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="promise" id="promise">
+    <div class="promise-inner">
+      <div class="reveal">
+        <span class="section-tag">Our Promise</span>
+        <h2 class="section-title">Vision to<br><em>Reality.</em></h2>
+        <p class="promise-pullquote">We help organizations move from <strong>vision to reality</strong> with strategy that is grounded, thoughtful, and built to last.</p>
+        <div class="promise-values">
+          <div class="promise-value"><span class="promise-value-icon">✦</span><span class="promise-value-text">Clarity of direction</span></div>
+          <div class="promise-value"><span class="promise-value-icon">✦</span><span class="promise-value-text">Genuine collaboration</span></div>
+          <div class="promise-value"><span class="promise-value-icon">✦</span><span class="promise-value-text">Care for mission & people</span></div>
+          <div class="promise-value"><span class="promise-value-icon">✦</span><span class="promise-value-text">Plans you can actually use</span></div>
+        </div>
+      </div>
+      <div class="promise-visual reveal rd2">
+        <div class="dial-wrap">
+          <div class="dial-ring">
+            <div class="dial-dot"></div>
+            <div class="dial-dot"></div>
+            <div class="dial-dot"></div>
+            <div class="dial-dot"></div>
+          </div>
+          <div class="dial-ring-inner"></div>
+          <div class="dial-center">
+            <div class="dial-center-text" id="dialText">
+              <strong>Vision</strong>to Reality
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta" id="contact">
+    <div class="cta-inner">
+      <div class="reveal">
+        <span class="section-tag cta-tag">Ready to Begin?</span>
+        <h2 class="cta-headline">Let's start the<br><em>conversation.</em></h2>
+        <p class="cta-sub">If you're ready to take the next step, we're here.</p>
+        <div class="discovery-block">
+          <span class="disc-label">✦ The First Step</span>
+          <p class="disc-title">"Let's start the conversation — no strings, just strategy."</p>
+          <a href="https://calendly.com/thoughtprojectorstudios" target="_blank" class="btn-disc">Book a Discovery Call</a>
+        </div>
+      </div>
+      <div class="reveal rd2">
+        <div class="form-divider"><span>Or Send a Message</span></div>
+        <form class="contact-form" onsubmit="handleSubmit(event)">
+          <div>
+            <label class="flabel">Your Name</label>
+            <input class="finput" type="text" placeholder="Full name" />
+          </div>
+          <div>
+            <label class="flabel">Email Address</label>
+            <input class="finput" type="email" placeholder="you@organization.org" />
+          </div>
+          <div>
+            <label class="flabel">Organization Type</label>
+            <select class="fselect">
+              <option value="">Select your sector...</option>
+              <option>Film / Creative Media</option>
+              <option>Education Institution</option>
+              <option>Community / Nonprofit Organization</option>
+              <option>Advocacy / Social Justice</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div>
+            <label class="flabel">Tell Us About Your Vision</label>
+            <textarea class="ftextarea" placeholder="What are you building? What's the challenge? What does greatness look like for you?"></textarea>
+          </div>
+          <button type="submit" class="fsubmit">Let's Start a Conversation ✦</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div>
+      <div class="foot-brand">Thought <span>Projector</span> Studios</div>
+      <span class="foot-brand-sub">✦ Transforming Thoughts into Greatness ✦</span>
+    </div>
+    <div class="foot-copy">
+      © 2026 Thought Projector Studios.<br>All rights reserved.
+    </div>
+  </footer>
+
+  <script>
+    const cur = document.getElementById('cur');
+    const ring = document.getElementById('cur-ring');
+    let mx = 0, my = 0, rx = 0, ry = 0;
+    document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+    (function animCursor() {
+      cur.style.left = mx + 'px'; cur.style.top = my + 'px';
+      rx += (mx - rx) * .12; ry += (my - ry) * .12;
+      ring.style.left = rx + 'px'; ring.style.top = ry + 'px';
+      requestAnimationFrame(animCursor);
+    })();
+
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('on'); });
+    }, { threshold: 0.12 });
+    document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+    function handleSubmit(e) {
+      e.preventDefault();
+      const btn = e.target.querySelector('.fsubmit');
+      btn.textContent = 'Message Sent ✦';
+      btn.style.background = 'var(--gold)';
+      btn.style.color = 'var(--charcoal)';
+      btn.style.borderColor = 'var(--gold)';
+      setTimeout(() => {
+        btn.textContent = "Let's Start a Conversation ✦";
+        btn.style.background = 'var(--eggplant)';
+        btn.style.color = 'var(--vanilla)';
+        btn.style.borderColor = 'rgba(212,185,124,.3)';
+        e.target.reset();
+      }, 3000);
+    }
+
+    // Hamburger menu
+    function toggleMenu() {
+      const nav = document.getElementById('navLinks');
+      const btn = document.getElementById('hamburger');
+      nav.classList.toggle('open');
+      btn.classList.toggle('open');
+    }
+    function closeMenu() {
+      const nav = document.getElementById('navLinks');
+      const btn = document.getElementById('hamburger');
+      nav.classList.remove('open');
+      btn.classList.remove('open');
+    }
+
+    window.addEventListener('scroll', () => {
+      const s = window.scrollY;
+      const panel = document.querySelector('.hero-panel');
+      if (panel) panel.style.transform = `translateY(${s * 0.07}px)`;
+    });
+
+    // Dial text cycling
+    const dialPhrases = [
+      '<strong>Vision</strong><br>to Reality',
+      '<strong>Strategy</strong><br>meets Soul'
+    ];
+    let dialIndex = 0;
+    const dialText = document.getElementById('dialText');
+    setInterval(() => {
+      dialText.style.opacity = '0';
+      setTimeout(() => {
+        dialIndex = (dialIndex + 1) % dialPhrases.length;
+        dialText.innerHTML = dialPhrases[dialIndex];
+        dialText.style.opacity = '1';
+      }, 600);
+    }, 3000);
+  </script>
+</body>
+</html>
