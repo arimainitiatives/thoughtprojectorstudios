@@ -695,7 +695,7 @@
         <span class="line-italic">Thoughts</span>
         <span class="line-outline">into Greatness.</span>
       </h1>
-      <p class="hero-body">We help values-led businesses, creative, cultural, and mission-driven organizations turn big ideas into thoughtful strategy, stronger engagement, and meaningful impact.</p>
+      <p class="hero-body">We help values-led businesses, creative, cultural, and mission-driven organizations turn big ideas into thoughtful strategy, stronger engagement, and meaningful impact.[...]
       <p class="hero-body">Whether you're shaping a story, growing a community, or advancing a mission, we help you move forward with purpose.</p>
       <div class="hero-actions">
         <a href="https://calendly.com/thoughtprojectorstudios" target="_blank" class="btn-primary">Book a Discovery Call</a>
@@ -743,7 +743,7 @@
     <div class="about-left reveal">
       <span class="section-tag">Who We Are</span>
       <h2 class="section-title">Work that<br><em>Matters.</em></h2>
-      <p class="about-body">Thought Projector Studios is a strategic planning consultancy for people and organizations doing work that matters. We partner with values-led businesses, creatives, cultural organizations, educators, advocates, and nonprofits to bring structure to big ideas and help turn them into action.</p>
+      <p class="about-body">Thought Projector Studios is a strategic planning consultancy for people and organizations doing work that matters. We partner with values-led businesses, creatives, c[...]
       <p class="about-body">Our work is grounded in respect and a belief that strategy should support both the mission and the people behind it.</p>
     </div>
     <div class="about-right reveal rd2">
@@ -765,7 +765,7 @@
       <div class="what-left reveal">
         <span class="section-tag what-tag">What We Do</span>
         <h2 class="section-title light">Strategy<br><em>in Action.</em></h2>
-        <p class="what-body">We offer strategic planning, organizational development, audience and community engagement, community outreach, social impact strategy, and cross-sector collaboration.</p>
+        <p class="what-body">We offer strategic planning, organizational development, audience and community engagement, community outreach, social impact strategy, and cross-sector collaboration[...]
         <p class="what-body">We help clients clarify direction, align around shared goals, and build plans they can actually use.</p>
       </div>
       <div class="crossroads reveal rd2">
@@ -854,18 +854,18 @@
       </div>
       <div class="reveal rd2">
         <div class="form-divider"><span>Or Send a Message</span></div>
-        <form class="contact-form" onsubmit="handleSubmit(event)">
+        <form class="contact-form" action="https://formspree.io/f/mykvrvky" method="post">
           <div>
             <label class="flabel">Your Name</label>
-            <input class="finput" type="text" placeholder="Full name" />
+            <input class="finput" type="text" name="name" placeholder="Full name" required />
           </div>
           <div>
             <label class="flabel">Email Address</label>
-            <input class="finput" type="email" placeholder="you@organization.org" />
+            <input class="finput" type="email" name="email" placeholder="you@organization.org" required />
           </div>
           <div>
             <label class="flabel">Organization Type</label>
-            <select class="fselect">
+            <select class="fselect" name="organization_type" required>
               <option value="">Select your sector...</option>
               <option>Film / Creative Media</option>
               <option>Education Institution</option>
@@ -876,7 +876,7 @@
           </div>
           <div>
             <label class="flabel">Tell Us About Your Vision</label>
-            <textarea class="ftextarea" placeholder="What are you building? What's the challenge? What does greatness look like for you?"></textarea>
+            <textarea class="ftextarea" name="vision" placeholder="What are you building? What's the challenge? What does greatness look like for you?" required></textarea>
           </div>
           <button type="submit" class="fsubmit">Let's Start a Conversation ✦</button>
         </form>
@@ -910,22 +910,6 @@
       entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('on'); });
     }, { threshold: 0.12 });
     document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
-
-    function handleSubmit(e) {
-      e.preventDefault();
-      const btn = e.target.querySelector('.fsubmit');
-      btn.textContent = 'Message Sent ✦';
-      btn.style.background = 'var(--gold)';
-      btn.style.color = 'var(--charcoal)';
-      btn.style.borderColor = 'var(--gold)';
-      setTimeout(() => {
-        btn.textContent = "Let's Start a Conversation ✦";
-        btn.style.background = 'var(--eggplant)';
-        btn.style.color = 'var(--vanilla)';
-        btn.style.borderColor = 'rgba(212,185,124,.3)';
-        e.target.reset();
-      }, 3000);
-    }
 
     // Hamburger menu
     function toggleMenu() {
